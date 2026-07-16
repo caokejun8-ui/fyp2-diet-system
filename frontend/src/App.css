@@ -1,0 +1,248 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f0f9f8;
+  color: #1a2e35;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.navbar {
+  background-color: #023e4a;
+  padding: 14px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar h1 {
+  color: #02c39a;
+  font-size: 20px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  font-size: 14px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.btn {
+  background-color: #028090;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.btn:hover {
+  background-color: #02c39a;
+}
+
+input {
+  width: 100%;
+  padding: 10px 14px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+label {
+  font-size: 13px;
+  color: #5a7a82;
+}
+
+h2 {
+  color: #023e4a;
+  margin-bottom: 16px;
+}
+
+.error {
+  color: red;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.success {
+  color: #02c39a;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  font-size: 14px;
+}
+
+.nav-links a:hover {
+  color: #02c39a;
+}
+
+.bmi-badge {
+  background-color: #02c39a;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.plan-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-left: 5px solid #028090;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.plan-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.plan-card h3 {
+  color: #023e4a;
+  margin-bottom: 8px;
+}
+
+.plan-card p {
+  color: #5a7a82;
+  font-size: 14px;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #e8f7f5;
+  color: #028090;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.detail-section {
+  background: #f8fffe;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.detail-section h4 {
+  color: #028090;
+  margin-bottom: 10px;
+}
+
+.meal-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #e8f7f5;
+  font-size: 14px;
+  color: #1a2e35;
+}
+
+.meal-item:last-child {
+  border-bottom: none;
+}
+
+/* ===== Mobile Responsive Styles (NFR3) ===== */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px;
+  }
+
+  .navbar h1 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .nav-links a,
+  .nav-links button {
+    font-size: 13px;
+  }
+
+  .container {
+    padding: 12px;
+    max-width: 100%;
+  }
+
+  .card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .plan-card {
+    padding: 14px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  h3 {
+    font-size: 17px;
+  }
+
+  input, select, button {
+    font-size: 14px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  table, .table-wrapper {
+    overflow-x: auto;
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar h1 {
+    font-size: 16px;
+  }
+
+  .container {
+    padding: 8px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+}
