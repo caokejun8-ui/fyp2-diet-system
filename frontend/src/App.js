@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Plans from './pages/Plans';
 import PlanDetail from './pages/PlanDetail';
 import Profile from './pages/Profile';
+import Admin from './pages/Admin';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/plans" element={<Plans />} />
         <Route path="/plans/:goalType" element={<PlanDetail />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </Router>
   );

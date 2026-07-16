@@ -24,5 +24,19 @@ router.get('/goal/:goal_type', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+// Admin: update a plan's meal/exercise details
+router.put('/admin/:plan_id', async (req, res) => {
+  const { meal_details, exercise_details } = req.body;
+  try {
+    if (meal_details !== undefined) {
+      await db.query('UPDATE PLAN SET meal_details = ? WHERE plan_id = ?', [meal_details, req.params.plan_id]);
+    }
+    if (exercise_details !== undefined) {
+      await db.query('UPDATE FITNESS_PLAN SET exercise_details = ? WHERE plan_id = ?', [exercise_details, req.params.plan_id]);
+    }
+    res.json({ message: 'Plan updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
