@@ -91,6 +91,7 @@ function Admin() {
           <a href="/plans">Plans</a>
           <a href="/profile">Profile</a>
           <a href="/admin">Admin</a>
+          <span style={{ color: 'white', marginLeft: 20, fontSize: 14 }}>Admin: {user ? user.name : ''}</span>
           <button onClick={handleLogout} style={{ background: 'none', border: '1px solid white', color: 'white', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', marginLeft: 16 }}>Logout</button>
         </div>
       </div>
