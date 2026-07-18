@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
 function Plans() {
   const [plans, setPlans] = useState([]);
+  const [user, setUser] = useState(null); // NEW: needed to know if this user is an admin
   const navigate = useNavigate();
 
   useEffect(() => {
     const u = localStorage.getItem('user');
     if (!u) { navigate('/'); return; }
+    setUser(JSON.parse(u)); // NEW
     fetchPlans();
   }, []);
 
@@ -17,7 +19,7 @@ function Plans() {
     try {
       const goals = ['weight_loss', 'muscle_gain', 'maintenance'];
       const results = await Promise.all(
-        goals.map(g => axios.get(`http://localhost:5000/api/plan/goal/${g}`))
+        goals.map(g => api.get(`/plan/goal/${g}`))
       );
       setPlans(results.map(r => r.data[0]).filter(Boolean));
     } catch (err) {}
@@ -36,6 +38,7 @@ function Plans() {
           <a href="/dashboard">Home</a>
           <a href="/plans">Plans</a>
           <a href="/profile">Profile</a>
+          {user && user.role === 'admin' ? <a href="/admin">Admin</a> : null}
           <button onClick={handleLogout} style={{ background: 'none', border: '1px solid white', color: 'white', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', marginLeft: 16 }}>Logout</button>
         </div>
       </div>

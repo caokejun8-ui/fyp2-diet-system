@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import '../App.css';
 
@@ -46,6 +46,7 @@ function VideoFacade(props) {
 function PlanDetail() {
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // NEW: needed to know if this user is an admin
   const navigate = useNavigate();
   const { goalType } = useParams();
 
@@ -55,12 +56,13 @@ function PlanDetail() {
   useEffect(() => {
     const u = localStorage.getItem('user');
     if (!u) { navigate('/'); return; }
+    setUser(JSON.parse(u)); // NEW
     fetchPlan();
   }, [goalType]);
 
   const fetchPlan = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/plan/goal/' + goalType);
+      const res = await api.get('/plan/goal/' + goalType);
       setPlan(res.data[0] || null);
     } catch (err) {
       setPlan(null);
@@ -91,6 +93,7 @@ function PlanDetail() {
           <a href="/dashboard">Home</a>
           <a href="/plans">Plans</a>
           <a href="/profile">Profile</a>
+          {user && user.role === 'admin' ? <a href="/admin">Admin</a> : null}
           <button onClick={handleLogout} style={{ background: 'none', border: '1px solid white', color: 'white', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', marginLeft: 16 }}>Logout</button>
         </div>
       </div>

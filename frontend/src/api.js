@@ -1,11 +1,10 @@
 import axios from 'axios';
 
-// CHANGED: baseURL now reads from an environment variable (REACT_APP_API_URL),
-// falling back to localhost for local development. This lets the same code
-// work both on your own computer and after deployment, just by setting a
-// different value for REACT_APP_API_URL in each environment.
+// A single axios instance shared by every page.
+// baseURL means you only write '/weight/add' instead of the full
+// 'http://localhost:5000/api/weight/add' everywhere.
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: 'http://localhost:5000/api',
 });
 
 // This runs before every request. It grabs the token saved at login

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../App.css';
 
 function Admin() {
@@ -10,6 +11,8 @@ function Admin() {
   const [mealDraft, setMealDraft] = useState('');
   const [exerciseDraft, setExerciseDraft] = useState('');
   const [message, setMessage] = useState('');
+  const [stats, setStats] = useState(null); // NEW
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,17 +25,31 @@ function Admin() {
     }
     setUser(parsed);
     fetchPlans();
+    fetchStats(); // NEW
   }, []);
 
   const fetchPlans = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/plan');
+      const res = await api.get('/plan');
       const results = await Promise.all(
         res.data.map(function (p) {
-          return axios.get('http://localhost:5000/api/plan/goal/' + p.goal_type);
+          return api.get('/plan/goal/' + p.goal_type);
         })
       );
       setPlans(results.map(function (r) { return r.data[0]; }).filter(Boolean));
+    } catch (err) {}
+  };
+
+  // NEW: fetch admin statistics
+  const fetchStats = async () => {
+    try {
+      const res = await api.get('/plan/admin/stats');
+      // Turn goalDistribution into a chart-friendly format with readable labels
+      const labelMap = { weight_loss: 'Weight Loss', muscle_gain: 'Muscle Gain', maintenance: 'Maintenance' };
+      const chartData = res.data.goalDistribution.map(function (row) {
+        return { name: labelMap[row.goal_type] || row.goal_type, count: row.count };
+      });
+      setStats({ totalUsers: res.data.totalUsers, chartData: chartData });
     } catch (err) {}
   };
 
@@ -52,7 +69,7 @@ function Admin() {
 
   const saveEdit = async (plan_id) => {
     try {
-      await axios.put('http://localhost:5000/api/plan/admin/' + plan_id, {
+      await api.put('/plan/admin/' + plan_id, {
         meal_details: mealDraft,
         exercise_details: exerciseDraft
       });
@@ -81,6 +98,32 @@ function Admin() {
       <div className="container">
         <h2 style={{ marginTop: 24 }}>Admin - Manage Plans</h2>
         <p style={{ color: '#5a7a82', marginBottom: 20 }}>Edit the meal and fitness plan content shown to all users.</p>
+
+        {/* NEW: Statistics card */}
+        {stats ? (
+          <div className="card">
+            <h3>Usage Statistics</h3>
+            <p style={{ fontSize: 16, marginBottom: 12 }}>
+              <strong>Total Registered Users:</strong> {stats.totalUsers}
+            </p>
+            {stats.chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={stats.chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#028090" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p style={{ color: '#888' }}>No recommendations generated yet.</p>
+            )}
+            <p style={{ fontSize: 12, color: '#999', marginTop: 8 }}>
+              Each user is counted once, based on their most recent AI-inferred goal.
+            </p>
+          </div>
+        ) : null}
 
         {plans.map(function (plan) {
           return (

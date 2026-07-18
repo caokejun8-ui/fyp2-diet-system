@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate, Link } from 'react-router-dom';
 import '../App.css';
 
@@ -34,7 +34,7 @@ function Register() {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', form);
+      await api.post('/auth/register', form);
       setMessage('Registration successful! Redirecting...');
       setTimeout(() => navigate('/'), 1500);
     } catch (err) {

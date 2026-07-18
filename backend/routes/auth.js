@@ -24,11 +24,25 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const [rows] = await db.query('SELECT * FROM USER WHERE email = ?', [email]);
-    if (rows.length === 0) return res.status(400).json({ error: 'User not found' });
+
+    // CHANGED: same generic message whether the email doesn't exist
+    // or the password is wrong, so an attacker can't tell which one failed.
+    if (rows.length === 0) {
+      return res.status(400).json({ error: 'Wrong email or password' });
+    }
     const user = rows[0];
     const match = await bcrypt.compare(password, user.password_hash);
-    if (!match) return res.status(400).json({ error: 'Wrong password' });
-    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    if (!match) {
+      return res.status(400).json({ error: 'Wrong email or password' });
+    }
+
+    // CHANGED: role added to the token so verifyAdmin can check it later
+    // without needing an extra database lookup on every admin request.
+    const token = jwt.sign(
+      { user_id: user.user_id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
     res.json({ token, user: { user_id: user.user_id, name: user.name, email: user.email, age: user.age, gender: user.gender, role: user.role } });
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../App.css';
@@ -10,6 +10,7 @@ function Dashboard() {
   const [height, setHeight] = useState('');
   const [recommendation, setRecommendation] = useState(null);
   const [history, setHistory] = useState([]);
+  const [progress, setProgress] = useState(null); // NEW: target-weight progress
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
@@ -19,11 +20,12 @@ function Dashboard() {
     const parsed = JSON.parse(u);
     setUser(parsed);
     fetchHistory(parsed.user_id);
+    fetchProgress(parsed.user_id); // NEW
   }, []);
 
   const fetchHistory = async (user_id) => {
     try {
-      const res = await axios.get('http://localhost:5000/api/weight/history/' + user_id);
+      const res = await api.get('/weight/history/' + user_id);
       const formatted = res.data.map(function (r, index) {
         return Object.assign({}, r, {
           recorded_date: r.recorded_date.slice(0, 10),
@@ -34,11 +36,22 @@ function Dashboard() {
     } catch (err) {}
   };
 
+  // NEW: fetch target-weight progress
+  const fetchProgress = async (user_id) => {
+    try {
+      const res = await api.get('/weight/progress/' + user_id);
+      setProgress(res.data);
+    } catch (err) {
+      setProgress(null);
+    }
+  };
+
   const handleDeleteRecord = async (record_id) => {
     if (!window.confirm('Delete this record?')) return;
     try {
-      await axios.delete('http://localhost:5000/api/weight/' + record_id);
+      await api.delete('/weight/' + record_id);
       fetchHistory(user.user_id);
+      fetchProgress(user.user_id); // NEW: progress changes when a record is deleted
     } catch (err) {}
   };
 
@@ -60,15 +73,16 @@ function Dashboard() {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/recommend', {
+      const res = await api.post('/recommend', {
         user_id: user.user_id, weight_kg: weightNum,
         height_cm: heightNum, age: user.age, gender: user.gender
       });
       setRecommendation(res.data);
-      await axios.post('http://localhost:5000/api/weight/add', {
+      await api.post('/weight/add', {
         user_id: user.user_id, weight_kg: weightNum, height_cm: heightNum
       });
       fetchHistory(user.user_id);
+      fetchProgress(user.user_id); // NEW: refresh progress after logging a new weight
       setMessage('');
     } catch (err) {
       setMessage('Error. Please try again.');
@@ -85,6 +99,7 @@ function Dashboard() {
           <a href="/dashboard">Home</a>
           <a href="/plans">Plans</a>
           <a href="/profile">Profile</a>
+          {user && user.role === 'admin' ? <a href="/admin">Admin</a> : null}
           <span style={{ color: 'white', marginLeft: 20, fontSize: 14 }}>Hi, {user ? user.name : ''}</span>
           <button onClick={handleLogout} style={{ background: 'none', border: '1px solid white', color: 'white', padding: '6px 14px', borderRadius: 6, cursor: 'pointer', marginLeft: 16 }}>Logout</button>
         </div>
@@ -100,6 +115,43 @@ function Dashboard() {
           {message ? <p className="error">{message}</p> : null}
           <button className="btn" onClick={handleSubmit}>Calculate BMI & Get AI Recommendation</button>
         </div>
+
+        {/* NEW: Target weight progress card */}
+        {progress && progress.hasTarget ? (
+          <div className="card">
+            <h2>Goal Progress</h2>
+            {progress.progressPercent !== undefined ? (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 6 }}>
+                  <span>Start: {progress.firstWeight} kg</span>
+                  <span>Now: {progress.currentWeight} kg</span>
+                  <span>Target: {progress.targetWeight} kg</span>
+                </div>
+                <div style={{ background: '#e8f7f5', borderRadius: 8, height: 18, overflow: 'hidden' }}>
+                  <div style={{
+                    width: progress.progressPercent + '%',
+                    background: '#028090',
+                    height: '100%',
+                    transition: 'width 0.4s ease'
+                  }} />
+                </div>
+                <p style={{ marginTop: 8, fontSize: 14, color: '#333' }}>
+                  <strong>{progress.progressPercent}%</strong> of the way to your target weight.
+                </p>
+              </div>
+            ) : (
+              <p style={{ color: '#777' }}>{progress.message}</p>
+            )}
+          </div>
+        ) : null}
+        {progress && !progress.hasTarget ? (
+          <div className="card">
+            <h2>Goal Progress</h2>
+            <p style={{ color: '#777' }}>
+              No target weight set yet. Go to <a href="/profile">Profile</a> to set one and start tracking your progress.
+            </p>
+          </div>
+        ) : null}
 
         {recommendation ? (
           <div className="card">
