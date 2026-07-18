@@ -13,6 +13,7 @@ function Plans() {
     if (!u) { navigate('/'); return; }
     setUser(JSON.parse(u)); // NEW
     fetchPlans();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPlans = async () => {

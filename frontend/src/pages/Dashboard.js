@@ -21,6 +21,7 @@ function Dashboard() {
     setUser(parsed);
     fetchHistory(parsed.user_id);
     fetchProgress(parsed.user_id); // NEW
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchHistory = async (user_id) => {

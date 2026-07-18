@@ -19,6 +19,7 @@ function Profile() {
     if (!u) { navigate('/'); return; }
     const parsed = JSON.parse(u);
     fetchProfile(parsed.user_id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchProfile = async (user_id) => {

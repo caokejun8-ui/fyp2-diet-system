@@ -58,6 +58,7 @@ function PlanDetail() {
     if (!u) { navigate('/'); return; }
     setUser(JSON.parse(u)); // NEW
     fetchPlan();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goalType]);
 
   const fetchPlan = async () => {

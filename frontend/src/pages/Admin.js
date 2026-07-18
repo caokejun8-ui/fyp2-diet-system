@@ -26,6 +26,7 @@ function Admin() {
     setUser(parsed);
     fetchPlans();
     fetchStats(); // NEW
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPlans = async () => {
