@@ -1,35 +1,29 @@
-import axios from 'axios';
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
 
-// CHANGED: baseURL now reads from an environment variable (REACT_APP_API_URL),
-// falling back to localhost for local development. This lets the same code
-// work both on your own computer and after deployment, just by setting a
-// different value for REACT_APP_API_URL in each environment.
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Test route
+app.get('/', (req, res) => {
+  res.json({ message: 'AI Diet & Fitness System API is running!' });
 });
 
-// This runs before every request. It grabs the token saved at login
-// and attaches it as an Authorization header automatically, so you
-// don't have to remember to add it in every single page.
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+// Routes
+const authRoutes = require('./routes/auth');
+const weightRoutes = require('./routes/weight');
+const planRoutes = require('./routes/plan');
+const recommendRoutes = require('./routes/recommend');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/weight', weightRoutes);
+app.use('/api/plan', planRoutes);
+app.use('/api/recommend', recommendRoutes);
+app.use('/api/profile', require('./routes/profile'));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-// If the backend ever says the token is missing/expired (401/403),
-// send the user back to the login page automatically.
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      localStorage.clear();
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
-
-export default api;
